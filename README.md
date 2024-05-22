@@ -1,5 +1,5 @@
 # Project Description
-The project is about the implementation of the Data path of MIPS32 processor in verilog and writting a testbench to verify the design.
+The project is about the implementation of the Data path of single cycle MIPS32 processor in verilog and writting a testbench to verify the design.
 The Design supports set of instructions as follow :
  ### R-type instruction such as        : add - sub - AND - OR - NOR - slt
  ### load and store instruction        : LW - SW
