@@ -1,13 +1,7 @@
 module Instruction_MEM #(parameter MEM_WIDTH = 32, MEM_DEPTH = 1024, ADDR_SIZE = 32)
 (
 	input wire  [ADDR_SIZE-1:0] Instruction_addr,
-	output wire [4:0] 			rd_addr1,
-	output wire [4:0] 			rd_addr2,
-	output wire [4:0] 			wr_addr,
-	output wire [15:0] 			branch_16bit_addr,
-	output wire [25:0]          jump_26bit_addr,
-	output wire [5:0]			opcode_bits,
-	output wire [5:0] 			function_bits
+	output wire [MEM_WIDTH-1:0] Instruction_Data
 );
 	
 
@@ -47,16 +41,7 @@ module Instruction_MEM #(parameter MEM_WIDTH = 32, MEM_DEPTH = 1024, ADDR_SIZE =
 	end
 	
 	// instruction word
-	wire [MEM_WIDTH-1:0] Instruction_Data;
 	assign Instruction_Data = I_mem [Instruction_addr[31:2]] ;
 
-	// output assignments
-	assign rd_addr1 		 = Instruction_Data[25:21] ;
-	assign rd_addr2 		 = Instruction_Data[20:16] ;
-	assign wr_addr  		 = Instruction_Data[15:11] ;
-	assign branch_16bit_addr = Instruction_Data[15:0]  ;
-	assign jump_26bit_addr   = Instruction_Data[25:0]  ;
-	assign opcode_bits		 = Instruction_Data[31:26] ;
-	assign function_bits 	 = Instruction_Data[5:0]   ;
 
 endmodule

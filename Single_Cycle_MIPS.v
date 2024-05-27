@@ -4,13 +4,13 @@ module Single_Cycle_MIPS
 	input wire rst
 );
 	
-	wire [31:0] pc_in_top, pc_out_top, wr_data_top, rd_data1_top, rd_data2_top, sign_ext_OUT_top, ALU_Src2_top;
+	wire [31:0] pc_in_top, pc_out_top, INSTRUCTION, wr_data_top, rd_data1_top, rd_data2_top, sign_ext_OUT_top, ALU_Src2_top;
 	wire [31:0] ALU_result_top, rd_data_mem_top, pc_plus_4_top, shift_left_branch, branch_address_top, pc_src1_top, pc_src2_top;
-	wire [4:0] rd_addr1_top, rd_addr2_top, wr_addr_top, wr_addr_field;
+	wire [4:0] rs_field_top, rt_field_top, rd_field_top, wr_addr_top;
 	wire [15:0] branch_16bit_addr_top;
 	wire [25:0] jump_26bit_addr_top;
 	wire [5:0] opcode_bits_top, function_bits_top;
-	wire RegDst_top, Jump_top, Branch_top, MemRead_top, MemToReg_top, MemWrite_top, ALUSrc_top, RegWrite_top, Zero_flag_top, PC_SRC;
+	wire RegDst_top, Jump_top, Branch_top, MemRead_top, MemToReg_top, MemWrite_top, ALUSrc_top, RegWrite_top, Zero_flag_top, Branch_taken;
 	wire [1:0] ALUOp_top;
 	wire [3:0] ALU_control_top;
 
@@ -24,9 +24,13 @@ module Single_Cycle_MIPS
 
 	// instruction memory instantiation
 	Instruction_MEM IMEM (
-		.Instruction_addr(pc_out_top), .rd_addr1(rd_addr1_top), .rd_addr2(rd_addr2_top),
-		.wr_addr(wr_addr_field), .branch_16bit_addr(branch_16bit_addr_top),
-		.jump_26bit_addr(jump_26bit_addr_top), .opcode_bits(opcode_bits_top), .function_bits(function_bits_top)
+		.Instruction_addr(pc_out_top), .Instruction_Data(INSTRUCTION)
+	);
+	
+	Instruction_decoding dec (
+		.Instruction_Data(INSTRUCTION), .rs_field(rs_field_top), .rt_field(rt_field_top),
+		.rd_field(rd_field_top), .branch_16bit_field(branch_16bit_addr_top),
+		.jump_26bit_field(jump_26bit_addr_top), .opcode_field(opcode_bits_top), .function_field(function_bits_top)
 	);
 
 	// control unit instantiation
@@ -38,13 +42,13 @@ module Single_Cycle_MIPS
 
 	// wr_addr mux instantiation
 	TwoToOne_mux mux1 (
-		.IN1(rd_addr2_top), .IN2(wr_addr_field),
+		.IN1(rt_field_top), .IN2(rd_field_top),
 		.sel(RegDst_top), .mux_out(wr_addr_top)
 	);
 	
 	// register file instantiation
 	Register_File R_F (
-		.clk(clk), .rst(rst), .RegWrite(RegWrite_top), .rd_addr1(rd_addr1_top), .rd_addr2(rd_addr2_top),
+		.clk(clk), .rst(rst), .RegWrite(RegWrite_top), .rd_addr1(rs_field_top), .rd_addr2(rt_field_top),
 		.wr_addr(wr_addr_top), .wr_data(wr_data_top), .rd_data1(rd_data1_top), .rd_data2(rd_data2_top)
 		); 
 
@@ -100,13 +104,13 @@ module Single_Cycle_MIPS
 
 	// branch selector AND gate
 	AND_GATE AND1 (
-		.in1(Branch_top), .in2(Zero_flag_top), .out(PC_SRC)
+		.in1(Branch_top), .in2(Zero_flag_top), .out(Branch_taken)
 	);
 
 	// pcsrc mux
 	TwoToOne_mux pc_src_mux (
 		.IN1(pc_plus_4_top), .IN2(branch_address_top),
-		.sel(PC_SRC), .mux_out(pc_src1_top)
+		.sel(Branch_taken), .mux_out(pc_src1_top)
 	);
 
 	// pc_in mux
