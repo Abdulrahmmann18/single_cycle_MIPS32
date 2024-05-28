@@ -14,7 +14,7 @@ The Design supports set of instructions as follow :
 ![single_cycle_waveform](https://github.com/Abdulrahmmann18/single_cycle_MIPS32/assets/144833244/7086a5c2-e2ad-4a2d-8c33-e32e763402b7)
 
 
-# The program excuted 
+# The program executed 
 ![excuted_program](https://github.com/Abdulrahmmann18/single_cycle_MIPS32/assets/144833244/9d765f38-422b-4c79-889a-7a8d263dee78)
 
 
